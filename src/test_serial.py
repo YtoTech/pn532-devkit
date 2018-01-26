@@ -1,35 +1,34 @@
 #-*- coding: utf-8 -*-
-from utils.serials import list_ports
+from utils.serials import list_ports, pretty_name_long, pretty_name_medium
 import serial
 import binascii
 import time
+import asyncio
 
+def select_reader(ports):
+    default_index = 0
+    user_input = input('Select a device: [{}] '.format(default_index))
+    if user_input is '':
+        return ports[default_index]
+    try:
+        return ports[int(user_input)]
+    except:
+        print('Invalid selection [{}]'.format(user_input))
+        return select_reader(ports)
 
-# https://community.particle.io/t/dfrobot-nfc-chip-uart-communication/7411
-import array
-wake = array.array('B', [
-  0x55, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0x03, 0xfd, 0xd4, 0x14, 0x01, 0x17, 0x00
-])
-# const unsigned char firmware[9]={
-  # 0x00, 0x00, 0xFF, 0x02, 0xFE, 0xD4, 0x02, 0x2A, 0x00};//
-detectingTag = array.array('B', [
-  0x00, 0x00, 0xFF, 0x04, 0xFC, 0xD4, 0x4A, 0x01, 0x00, 0xE1, 0x00
-])
-# const unsigned char std_nfc[25] = {
-  # 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00, 0x00, 0xFF, 0x0C, \
-
-# 0xF4, 0xD5, 0x4B, 0x01, 0x01, 0x00, 0x04, 0x08, 0x04, 0x00, 0x00, 0x00, 0x00, 0x4b, 0x00};
-if __name__ == '__main__':
-    ports = list_ports()
-    print('Ports series disponibles:')
+async def main():
+    ports = await list_ports()
+    print('Serial ports available:')
     for port in ports:
-        print(
-            '* {} [{}] - {} {}'.format(
-                port['name'], port['device'], port['manufacturer'],
-                port['product']
-            )
-        )
+        print(' {}. {}'.format(ports.index(port), pretty_name_long(port)))
+    if len(ports) < 1:
+        raise RuntimeError('No serial ports available. Does the reader is connected?')
+    selected_port = select_reader(ports)
+    print('Selected reader {}'.format(pretty_name_medium(selected_port)))
+
+if __name__ == '__main__':
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
     # if len(ports) > 1:
     #     port = ports[1]
     # else:
