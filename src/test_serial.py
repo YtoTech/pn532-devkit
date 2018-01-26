@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 from utils.serials import list_ports, pretty_name_long, pretty_name_medium
+from drivers.pn532_serial import PN532_Serial_Driver
 import serial
 import binascii
 import time
@@ -24,7 +25,10 @@ async def main():
     if len(ports) < 1:
         raise RuntimeError('No serial ports available. Does the reader is connected?')
     selected_port = select_reader(ports)
-    print('Selected reader {}'.format(pretty_name_medium(selected_port)))
+    print('Selected port is {}'.format(pretty_name_medium(selected_port)))
+    print('Connecting to the reader...')
+    driver = await PN532_Serial_Driver.open(port['device'])
+    print('Connected')
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
