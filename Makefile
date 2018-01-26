@@ -2,4 +2,4 @@ install:
 	pipenv install
 
 serial-read-test:
-	pipenv run python utils/test_serial.py
+	pipenv run python src/test_serial.py
