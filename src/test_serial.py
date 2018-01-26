@@ -21,13 +21,15 @@ detectingTag = array.array('B', [
 
 # 0xF4, 0xD5, 0x4B, 0x01, 0x01, 0x00, 0x04, 0x08, 0x04, 0x00, 0x00, 0x00, 0x00, 0x4b, 0x00};
 if __name__ == '__main__':
-    import serial.tools.list_ports
-    ports = serial.tools.list_ports.comports()
-    for port in ports:
-        print(port)
-        print(port.device, port.description, port.name, port.product, port.manufacturer, port.interface)
     ports = list_ports()
-    print('Ports series disponibles: {}'.format(ports))
+    print('Ports series disponibles:')
+    for port in ports:
+        print(
+            '* {} [{}] - {} {}'.format(
+                port['name'], port['device'], port['manufacturer'],
+                port['product']
+            )
+        )
     # if len(ports) > 1:
     #     port = ports[1]
     # else:
